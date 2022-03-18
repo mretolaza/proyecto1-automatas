@@ -1,0 +1,9 @@
+# .eslintignore
+# /node_modules/*
+
+# Ignore built files except dist/index.js
+
+# Build
+dist/*
+src/assets/*
+public/*

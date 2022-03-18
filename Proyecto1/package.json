@@ -1,0 +1,25 @@
+{
+  "name": "proyecto1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "5.12.0",
+    "eslint": "7.4.0",
+    "eslint-config-airbnb-base": "14.2.0",
+    "eslint-plugin-import": "2.22.0",
+    "eslint-plugin-node": "11.1.0",
+    "lint-staged": "10.2.11"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "regexp-tree": "^0.1.24",
+    "treeify": "^1.1.0",
+    "universal-perf-hooks": "^1.0.1"
+  }
+}

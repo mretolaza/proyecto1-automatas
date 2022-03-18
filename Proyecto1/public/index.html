@@ -1,0 +1,162 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Proyecto 1</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Proyecto 1 - Diseño de Lenguajes: María Mercedes Retolaza Reyna, 16339</a>
+      </div>
+    </div>
+  </nav>
+  
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="form-group">
+        <label for="regExp">Regular Expression:</label>
+        <input type="regExp" class="form-control" id="regExp">
+      </div>
+      <div class="form-group">
+        <label for="word">Word to validate:</label>
+        <input type="word" class="form-control" id="word">
+      </div>
+    </div>
+    <div class="col-sm-8">
+      <div class="row">
+        <div class="col-sm-12">
+          <label for="graph_result">Graph result:</label>
+          <label id="time_result"></label>
+          <pre id="graph_result"></pre>
+          <label for="validation_result">Validation result:</label>
+          <pre id="validation_result"></pre>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          <button type="button" class="btn btn-primary btn-block" id="compile-nfa">Compile to NFA</button>
+        </div>
+        <div class="col-sm-3">
+          <button type="button" class="btn btn-primary btn-block" id="compile-dfa">Compile to DFA</button>
+        </div>
+        <div class="col-sm-3">
+          <button type="button" class="btn btn-primary btn-block" id="compile-direct-dfa">Direct DFA</button>
+        </div>
+        <div class="col-sm-3">
+          <button type="button" class="btn btn-danger btn-block" id="reset">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="regparser-browser.js"></script>
+<script src="viz.js"></script>
+<script>
+  try {
+  var regParser = require('regparser');
+  var parser = new regParser.RegParser();
+  } catch (err) {
+    graphResult.className = "text-danger";
+    graphResult.innerHTML = e;
+  }
+  var NFA;
+
+  var regExpInput = document.getElementById("regExp");
+  var wordInput = document.getElementById("word");
+  var graphResult = document.getElementById("graph_result");
+  var validationResult = document.getElementById("validation_result");
+  var timeResult = document.getElementById("time_result");
+
+  document.getElementById("compile-nfa").addEventListener("click", function (e) {
+    var regExp = regExpInput.value;
+    var word = wordInput.value;
+
+    try { 
+      parser.reset(regExp);
+      var {
+        executionTime,
+        nfa,
+        fsm,
+      } = parser.parseToNFA();
+      NFA = nfa;
+      var result = Viz(fsm.toDotScript(), 'svg', 'dot');
+      graphResult.className = "";
+      graphResult.innerHTML = result; 
+      
+      var validateResult = fsm.validateWord(word);
+      timeResult.innerHTML = executionTime.toFixed(4) + ' ms'
+      validationResult.innerHTML = validateResult ? 'Valid word' : 'Invalid word';
+    } catch(e) {
+      graphResult.className = "text-danger";
+      graphResult.innerHTML = e;
+    }
+  });
+
+  document.getElementById("compile-dfa").addEventListener("click", function (e) {
+    var regExp = regExpInput.value;
+    var word = wordInput.value;
+
+    try {
+      parser.reset(regExp);
+      var { nfa } = parser.parseToNFA();
+
+      var {
+        executionTime,
+        dfa,
+      } = nfa.toDFA();
+      
+      var result = Viz(dfa.toDotScript(), 'svg', 'dot');
+      graphResult.className = "";
+      graphResult.innerHTML = result;
+
+      var validateResult = dfa.validateWord(word);
+      timeResult.innerHTML = executionTime.toFixed(4) + ' ms'
+      validationResult.innerHTML = validateResult ? 'Valid word' : 'Invalid word';
+    } catch(e) {
+      graphResult.className = "text-danger";
+      graphResult.innerHTML = e;
+    }
+  });
+
+  document.getElementById("compile-direct-dfa").addEventListener("click", function (e) {
+    var regExp = regExpInput.value;
+    var word = wordInput.value;
+    var parser = new regParser.DirectDFA(regExp);
+
+    try {
+      var {
+        executionTime,
+        fsm
+      } = parser.parseToDFA();
+      var result = Viz(fsm.toDotScript(), 'svg', 'dot');
+      graphResult.className = "";
+      graphResult.innerHTML = result;
+
+      var validateResult = fsm.validateWord(word);
+      timeResult.innerHTML = executionTime.toFixed(4) + ' ms'
+      validationResult.innerHTML = validateResult ? 'Valid word' : 'Invalid word';
+    } catch(e) {
+      graphResult.className = "text-danger";
+      graphResult.innerHTML = e;
+    }
+  });
+
+
+  document.getElementById("reset").addEventListener("click", function (e) {
+    parser.clear();
+
+    regExpInput.value = "";
+    wordInput.value = "";
+    graphResult.innerHTML = "";
+    validationResult.innerHTML = "";
+    timeResult.innerHTML = "";
+  });
+</script>
+</body>
+</html>
